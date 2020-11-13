@@ -91,14 +91,14 @@ func (client Mikrotik) FindPool(id string) (*Pool, error) {
 	return &pool, nil
 }
 
-func (client Mikrotik) UpdatePool(id, ranges string, comment string, nextpool string) (*Pool, error) {
+func (client Mikrotik) UpdatePool(id, name string, ranges string, comment string, nextpool string) (*Pool, error) {
 	c, err := client.getMikrotikClient()
 
 	if err != nil {
 		return nil, err
 	}
 
-	cmd := strings.Split(fmt.Sprintf("/ip/pool/set =.id=%s =ranges=%s =comment=%s =next-pool=%s", id, ranges, comment, nextpool), " ")
+	cmd := strings.Split(fmt.Sprintf("/ip/pool/set =.id=%s =name=%s =ranges=%s =comment=%s =next-pool=%s", id, name, ranges, comment, nextpool), " ")
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
 	_, err = c.RunArgs(cmd)
 
