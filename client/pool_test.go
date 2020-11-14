@@ -13,18 +13,15 @@ func TestAddPoolAndDeletePool(t *testing.T) {
 	name := "testacc"
 	ranges := "172.16.0.1-172.16.0.8,172.16.0.10"
 	comment := "terraform-acc-test-pool"
-	nextpool := "none"
 	expectedPool := &Pool{
-		Name:     name,
-		Ranges:   ranges,
-		Comment:  comment,
-		NextPool: nextpool,
+		Name:    name,
+		Ranges:  ranges,
+		Comment: comment,
 	}
 	pool, err := c.AddPool(
 		name,
 		ranges,
 		comment,
-		nextpool,
 	)
 
 	fmt.Sprintf("expected pool:  %v", expectedPool)
@@ -47,9 +44,6 @@ func TestAddPoolAndDeletePool(t *testing.T) {
 
 	if strings.Compare(pool.Comment, expectedPool.Comment) != 0 {
 		t.Errorf("The pool Comment fields do not match. actual: %v expected: %v", pool.Comment, expectedPool.Comment)
-	}
-	if nextpool != "none" && strings.Compare(pool.NextPool, expectedPool.NextPool) != 0 {
-		t.Errorf("The pool NextPool fields do not match. actual: %v expected: %v", pool.NextPool, expectedPool.NextPool)
 	}
 
 	foundPool, err := c.FindPool(pool.Id)

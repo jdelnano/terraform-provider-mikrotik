@@ -13,6 +13,7 @@ var originalName string = "test-pool"
 var originalRanges string = "172.16.0.1-172.16.0.8,172.16.0.10"
 var updatedName string = "test-pool-updated"
 var updatedRanges string = "172.16.0.11-172.16.0.12"
+var updatedNextPool string = "none"
 
 func TestAccMikrotikPool_create(t *testing.T) {
 	resourceName := "mikrotik_pool.bar"
@@ -28,7 +29,6 @@ func TestAccMikrotikPool_create(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "name", originalName),
 					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
-					resource.TestCheckResourceAttr(resourceName, "nextpool", ""),
 				),
 			},
 		},
@@ -46,39 +46,30 @@ func TestAccMikrotikPool_create(t *testing.T) {
 //				Config: testAccPool(),
 //				Check: resource.ComposeAggregateTestCheckFunc(
 //					testAccPoolExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "address", originalName),
-//					resource.TestCheckResourceAttr(resourceName, "macaddress", originalRanges),
+//					resource.TestCheckResourceAttr(resourceName, "name", originalName),
+//					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
 //				),
 //			},
 //			{
-//				Config: testAccPoolUpdatedIpAddress(),
+//				Config: testAccPoolUpdatedName(),
 //				Check: resource.ComposeAggregateTestCheckFunc(
 //					testAccPoolExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "address", updatedName),
-//					resource.TestCheckResourceAttr(resourceName, "macaddress", originalRanges),
+//					resource.TestCheckResourceAttr(resourceName, "name", updatedName),
+//					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
 //				),
 //			},
 //			{
-//				Config: testAccPoolUpdatedMacAddress(),
+//				Config: testAccPoolUpdatedRanges(),
 //				Check: resource.ComposeAggregateTestCheckFunc(
 //					testAccPoolExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "address", originalName),
-//					resource.TestCheckResourceAttr(resourceName, "macaddress", updatedRanges),
-//				),
-//			},
-//			{
-//				Config: testAccPoolUpdatedBlockAccess(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccPoolExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "address", originalName),
-//					resource.TestCheckResourceAttr(resourceName, "macaddress", originalRanges),
-//					resource.TestCheckResourceAttr(resourceName, "blocked", updatedBlockAccess),
+//					resource.TestCheckResourceAttr(resourceName, "name", originalName),
+//					resource.TestCheckResourceAttr(resourceName, "ranges", updatedRanges),
 //				),
 //			},
 //		},
 //	})
 //}
-//
+
 //func TestAccMikrotikPool_import(t *testing.T) {
 //	resourceName := "mikrotik_pool.bar"
 //	resource.Test(t, resource.TestCase{
@@ -124,7 +115,6 @@ func testAccPool() string {
 resource "mikrotik_pool" "bar" {
     name = "%s"
     ranges = "%s"
-    nextpool = ""
 }
 `, originalName, originalRanges)
 }
@@ -140,36 +130,33 @@ resource "mikrotik_pool" "bar" {
 //`, originalName, originalRanges)
 //}
 
-//func testAccPoolUpdatedIpAddress() string {
-//	return fmt.Sprintf(`
-//resource "mikrotik_pool" "bar" {
-//    comment = "bar"
-//    address = "%s"
-//    macaddress = "%s"
-//}
-//`, updatedName, originalRanges)
-//}
-//
-//func testAccPoolUpdatedMacAddress() string {
-//	return fmt.Sprintf(`
-//resource "mikrotik_pool" "bar" {
-//    comment = "bar"
-//    address = "%s"
-//    macaddress = "%s"
-//}
-//`, originalName, updatedRanges)
-//}
-//
-//func testAccPoolUpdatedBlockAccess() string {
-//	return fmt.Sprintf(`
-//resource "mikrotik_pool" "bar" {
-//    comment = "bar"
-//    address = "%s"
-//    macaddress = "%s"
-//    blocked= "%s"
-//}
-//`, originalName, originalRanges, updatedBlockAccess)
-//}
+func testAccPoolUpdatedName() string {
+	return fmt.Sprintf(`
+resource "mikrotik_pool" "bar" {
+    name = "%s"
+    ranges = "%s"
+}
+`, updatedName, originalRanges)
+}
+
+func testAccPoolUpdatedRanges() string {
+	return fmt.Sprintf(`
+resource "mikrotik_pool" "bar" {
+    name = "%s"
+    ranges = "%s"
+}
+`, originalName, updatedRanges)
+}
+
+func testAccPoolUpdatedNextPool() string {
+	return fmt.Sprintf(`
+resource "mikrotik_pool" "bar" {
+    name = "%s"
+    ranges = "%s"
+    nextpool = "%s"
+}
+`, originalName, originalRanges, updatedNextPool)
+}
 
 func testAccPoolExists(resourceName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
