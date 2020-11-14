@@ -31,7 +31,7 @@ func resourcePool() *schema.Resource {
 			"nextpool": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "",
+				Default:  "none",
 			},
 		},
 	}
@@ -41,10 +41,11 @@ func resourcePoolCreate(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 	ranges := d.Get("ranges").(string)
 	comment := d.Get("comment").(string)
+	nextpool := d.Get("nextpool").(string)
 
 	c := m.(client.Mikrotik)
 
-	pool, err := c.AddPool(name, ranges, comment)
+	pool, err := c.AddPool(name, ranges, comment, nextpool)
 	if err != nil {
 		return err
 	}

@@ -13,7 +13,14 @@ var originalName string = "test-pool"
 var originalRanges string = "172.16.0.1-172.16.0.8,172.16.0.10"
 var updatedName string = "test-pool-updated"
 var updatedRanges string = "172.16.0.11-172.16.0.12"
-var updatedNextPool string = "none"
+var updatedComment string = "updated"
+var updatedNextPool string = "spare"
+
+// spare pool vars
+var spareName string = updatedNextPool
+var spareRanges string = "172.16.0.248-172.16.0.249"
+var spareComment string = "spare-comment"
+var spareNextPool string = "none"
 
 func TestAccMikrotikPool_create(t *testing.T) {
 	resourceName := "mikrotik_pool.bar"
@@ -30,86 +37,96 @@ func TestAccMikrotikPool_create(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", originalName),
 					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
 				),
+				ExpectNonEmptyPlan: true,
 			},
 		},
 	})
 }
 
-//func TestAccMikrotikPool_updateAddress(t *testing.T) {
-//	resourceName := "mikrotik_pool.bar"
-//	resource.Test(t, resource.TestCase{
-//		PreCheck:     func() { testAccPreCheck(t) },
-//		Providers:    testAccProviders,
-//		CheckDestroy: testAccCheckMikrotikPoolDestroy,
-//		Steps: []resource.TestStep{
-//			{
-//				Config: testAccPool(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccPoolExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "name", originalName),
-//					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
-//				),
-//			},
-//			{
-//				Config: testAccPoolUpdatedName(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccPoolExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "name", updatedName),
-//					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
-//				),
-//			},
-//			{
-//				Config: testAccPoolUpdatedRanges(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccPoolExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "name", originalName),
-//					resource.TestCheckResourceAttr(resourceName, "ranges", updatedRanges),
-//				),
-//			},
-//		},
-//	})
-//}
+func TestAccMikrotikPool_updatePool(t *testing.T) {
+	resourceName := "mikrotik_pool.bar"
+	// create tmp pool needed to specify for 'next-pool' field in test resource
+	//pool, _ := createSparePool()
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckMikrotikPoolDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccPool(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccPoolExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "name", originalName),
+					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
+				),
+				ExpectNonEmptyPlan: true,
+			},
+			{
+				Config: testAccPoolUpdatedName(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccPoolExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "name", updatedName),
+					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
+				),
+				ExpectNonEmptyPlan: true,
+			},
+			{
+				Config: testAccPoolUpdatedRanges(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccPoolExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "name", originalName),
+					resource.TestCheckResourceAttr(resourceName, "ranges", updatedRanges),
+				),
+				ExpectNonEmptyPlan: true,
+			},
+			{
+				Config: testAccPoolUpdatedComment(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccPoolExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "name", originalName),
+					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
+					resource.TestCheckResourceAttr(resourceName, "comment", updatedComment),
+				),
+				ExpectNonEmptyPlan: true,
+			},
+			//{
+			//	Config: testAccPoolUpdatedNextPool(),
+			//	Check: resource.ComposeAggregateTestCheckFunc(
+			//		testAccPoolExists(resourceName),
+			//		resource.TestCheckResourceAttr(resourceName, "name", originalName),
+			//		resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
+			//		resource.TestCheckResourceAttr(resourceName, "nextpool", updatedNextPool),
+			//	),
+			//	//ExpectNonEmptyPlan: true,
+			//},
+		},
+	})
+	//destroySparePool(pool)
+}
 
-//func TestAccMikrotikPool_import(t *testing.T) {
-//	resourceName := "mikrotik_pool.bar"
-//	resource.Test(t, resource.TestCase{
-//		PreCheck:     func() { testAccPreCheck(t) },
-//		Providers:    testAccProviders,
-//		CheckDestroy: testAccCheckMikrotikPoolDestroy,
-//		Steps: []resource.TestStep{
-//			{
-//				Config: testAccPool(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccPoolExists(resourceName),
-//					resource.TestCheckResourceAttrSet(resourceName, "id")),
-//			},
-//			{
-//				ResourceName:      resourceName,
-//				ImportState:       true,
-//				ImportStateVerify: true,
-//			},
-//		},
-//	})
-//}
-//
-//func TestAccMikrotikPool_createDynamicDiff(t *testing.T) {
-//	resourceName := "mikrotik_pool.bar"
-//	resource.Test(t, resource.TestCase{
-//		PreCheck:     func() { testAccPreCheck(t) },
-//		Providers:    testAccProviders,
-//		CheckDestroy: testAccCheckMikrotikPoolDestroy,
-//		Steps: []resource.TestStep{
-//			{
-//				Config: testAccPoolDynamic(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccPoolExists(resourceName),
-//					resource.TestCheckResourceAttrSet(resourceName, "id")),
-//				ExpectNonEmptyPlan: true,
-//			},
-//		},
-//	})
-//}
-//
+func TestAccMikrotikPool_import(t *testing.T) {
+	resourceName := "mikrotik_pool.bar"
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckMikrotikPoolDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccPool(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccPoolExists(resourceName),
+					resource.TestCheckResourceAttrSet(resourceName, "id")),
+				ExpectNonEmptyPlan: true,
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
 func testAccPool() string {
 	return fmt.Sprintf(`
 resource "mikrotik_pool" "bar" {
@@ -118,17 +135,6 @@ resource "mikrotik_pool" "bar" {
 }
 `, originalName, originalRanges)
 }
-
-//func testAccPoolDynamic() string {
-//	return fmt.Sprintf(`
-//resource "mikrotik_pool" "bar" {
-//    comment = "bar"
-//    address = "%s"
-//    macaddress = "%s"
-//    dynamic = true
-//}
-//`, originalName, originalRanges)
-//}
 
 func testAccPoolUpdatedName() string {
 	return fmt.Sprintf(`
@@ -146,6 +152,16 @@ resource "mikrotik_pool" "bar" {
     ranges = "%s"
 }
 `, originalName, updatedRanges)
+}
+
+func testAccPoolUpdatedComment() string {
+	return fmt.Sprintf(`
+resource "mikrotik_pool" "bar" {
+    name = "%s"
+    ranges = "%s"
+    comment = "%s"
+}
+`, originalName, originalRanges, updatedComment)
 }
 
 func testAccPoolUpdatedNextPool() string {
@@ -237,4 +253,33 @@ func testAccCheckMikrotikPoolDestroy(s *terraform.State) error {
 		}
 	}
 	return nil
+}
+
+func createSparePool() (*client.Pool, error) {
+	c := client.NewClient(client.GetConfigFromEnv())
+
+	name := spareName
+	ranges := spareRanges
+	comment := spareComment
+	nextpool := spareNextPool
+	pool, err := c.AddPool(
+		name,
+		ranges,
+		comment,
+		nextpool,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return c.FindPool(pool.Id)
+}
+
+func destroySparePool(p *client.Pool) error {
+	c := client.NewClient(client.GetConfigFromEnv())
+
+	err := c.DeletePool(p.Id)
+
+	return err
 }

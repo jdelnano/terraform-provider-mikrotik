@@ -14,13 +14,13 @@ type Pool struct {
 	NextPool string `mikrotik"next-pool"`
 }
 
-func (client Mikrotik) AddPool(name string, ranges string, comment string) (*Pool, error) {
+func (client Mikrotik) AddPool(name string, ranges string, comment string, nextpool string) (*Pool, error) {
 	c, err := client.getMikrotikClient()
 
 	if err != nil {
 		return nil, err
 	}
-	cmd := strings.Split(fmt.Sprintf("/ip/pool/add =name=%s =ranges=%s =comment=%s", name, ranges, comment), " ")
+	cmd := strings.Split(fmt.Sprintf("/ip/pool/add =name=%s =ranges=%s =comment=%s =next-pool=%s", name, ranges, comment, nextpool), " ")
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
 	r, err := c.RunArgs(cmd)
 
