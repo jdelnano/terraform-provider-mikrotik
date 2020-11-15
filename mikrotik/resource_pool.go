@@ -106,9 +106,17 @@ func resourcePoolDelete(d *schema.ResourceData, m interface{}) error {
 
 func poolToData(pool *client.Pool, d *schema.ResourceData) error {
 	d.SetId(pool.Id)
-	d.Set("name", pool.Name)
-	d.Set("ranges", pool.Ranges)
-	d.Set("comment", pool.Comment)
-	d.Set("nextpool", pool.NextPool)
+	if err := d.Set("name", pool.Name); err != nil {
+		return err
+	}
+	if err := d.Set("ranges", pool.Ranges); err != nil {
+		return err
+	}
+	if err := d.Set("comment", pool.Comment); err != nil {
+		return err
+	}
+	if err := d.Set("nextpool", pool.NextPool); err != nil {
+		return err
+	}
 	return nil
 }

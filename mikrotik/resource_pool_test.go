@@ -24,6 +24,7 @@ var spareNextPool string = "none"
 
 func TestAccMikrotikPool_create(t *testing.T) {
 	resourceName := "mikrotik_pool.bar"
+	pool, _ := createSparePool()
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -36,11 +37,13 @@ func TestAccMikrotikPool_create(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "name", originalName),
 					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
+					resource.TestCheckResourceAttr(resourceName, "nextpool", spareName),
 				),
-				ExpectNonEmptyPlan: true,
+				//ExpectNonEmptyPlan: true,
 			},
 		},
 	})
+	destroySparePool(pool)
 }
 
 func TestAccMikrotikPool_updatePool(t *testing.T) {
@@ -132,8 +135,9 @@ func testAccPool() string {
 resource "mikrotik_pool" "bar" {
     name = "%s"
     ranges = "%s"
+    nextpool = "%s"
 }
-`, originalName, originalRanges)
+`, originalName, originalRanges, spareName)
 }
 
 func testAccPoolUpdatedName() string {
