@@ -163,3 +163,11 @@ func (client Mikrotik) getMikrotikClient() (c *routeros.Client, err error) {
 
 	return
 }
+
+func boolToMikrotikBool(b bool) string {
+	if b {
+		return "yes"
+	} else {
+		return "no"
+	}
+}
