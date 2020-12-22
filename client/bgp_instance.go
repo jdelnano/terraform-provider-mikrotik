@@ -133,7 +133,7 @@ func (client Mikrotik) DeleteBgpInstance(name string) error {
 		return err
 	}
 
-	cmd := strings.Split(fmt.Sprintf("/routing/bpg/instance/remove =numbers=%s", bgpInstance.Id), " ")
+	cmd := strings.Split(fmt.Sprintf("/routing/bpg/instance/remove =numbers=%s", bgpInstance.Name), " ")
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
 	r, err := c.RunArgs(cmd)
 	log.Printf("[DEBUG] Remove bgp instance via mikrotik api: %v", r)
