@@ -15,7 +15,6 @@ var noClusterID string = ""
 var bgpComment string = "test-comment"
 var confederation int = 8
 var updatedConfederation int = 5
-var noConfederation int = -1
 var confederationPeers string = ""
 var disabled bool = false
 var ignoreAsPathLen bool = false

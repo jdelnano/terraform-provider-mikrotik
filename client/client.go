@@ -179,18 +179,18 @@ func Marshel(s interface{}) string {
 	rv := reflect.ValueOf(s)
 	elem := rv.Elem()
 
-	// should this go before calling rv.Elem()?
 	if rv.Kind() != reflect.Ptr {
 		panic("Command attribute construction cannot work without a pointer")
 	}
-	//attributes := make([]string, elem.numfield())
+
 	var attributes []string
 
 	for i := 0; i < elem.NumField(); i++ {
 		value := elem.Field(i)
 		fieldType := elem.Type().Field(i)
 		// may need to revert to string split on ',' for struct tags with > 1 value
-		tag, _ := fieldType.Tag.Lookup("mikrotik")
+		// supports multiple struct tags--assumes first is mikrotik field name
+		tag := strings.Split(fieldType.Tag.Get("mikrotik"), ",")[0]
 
 		if tag != "" && (!value.IsZero() || value.Kind() == reflect.Bool) {
 			switch value.Kind() {
