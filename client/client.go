@@ -188,7 +188,6 @@ func Marshel(s interface{}) string {
 	for i := 0; i < elem.NumField(); i++ {
 		value := elem.Field(i)
 		fieldType := elem.Type().Field(i)
-		// may need to revert to string split on ',' for struct tags with > 1 value
 		// supports multiple struct tags--assumes first is mikrotik field name
 		tag := strings.Split(fieldType.Tag.Get("mikrotik"), ",")[0]
 

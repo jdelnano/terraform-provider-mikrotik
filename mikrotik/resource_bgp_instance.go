@@ -130,7 +130,11 @@ func resourceBgpInstanceRead(d *schema.ResourceData, m interface{}) error {
 func resourceBgpInstanceUpdate(d *schema.ResourceData, m interface{}) error {
 	c := m.(client.Mikrotik)
 
+	currentBgpInstance, err := c.FindBgpInstance(d.Get("name").(string))
+
 	instance := prepareBgpInstance(d)
+	instance.ID = currentBgpInstance.ID
+
 	bgpInstance, err := c.UpdateBgpInstance(instance)
 
 	if err != nil {
@@ -154,7 +158,8 @@ func resourceBgpInstanceDelete(d *schema.ResourceData, m interface{}) error {
 }
 
 func bgpInstanceToData(b *client.BgpInstance, d *schema.ResourceData) error {
-	d.SetId(b.ID)
+	d.SetId(b.Name)
+
 	if err := d.Set("name", b.Name); err != nil {
 		return err
 	}
@@ -211,11 +216,6 @@ func bgpInstanceToData(b *client.BgpInstance, d *schema.ResourceData) error {
 
 func prepareBgpInstance(d *schema.ResourceData) *client.BgpInstance {
 	bgpInstance := new(client.BgpInstance)
-
-	// set ID if updating resource
-	if d.Id() != "" {
-		bgpInstance.ID = d.Id()
-	}
 
 	bgpInstance.Name = d.Get("name").(string)
 	bgpInstance.As = d.Get("as").(int)

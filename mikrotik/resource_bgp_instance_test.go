@@ -128,12 +128,14 @@ func TestAccMikrotikBgpInstance_import(t *testing.T) {
 					testAccBgpInstanceExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id")),
 			},
-			// TODO:  need to identify why import fails
-			//{
-			//	ResourceName:      resourceName,
-			//	ImportState:       true,
-			//	ImportStateVerify: true,
-			//},
+			// TODO:  figure out why this fails
+			{
+				ResourceName: resourceName,
+				// tried adding this field, but didn't help
+				ImportStateId:     originalBgpName,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }
@@ -185,7 +187,7 @@ func testAccBgpInstanceExists(resourceName string) resource.TestCheckFunc {
 
 		c := client.NewClient(client.GetConfigFromEnv())
 
-		bgpInstance, err := c.FindBgpInstance(rs.Primary.Attributes["name"])
+		bgpInstance, err := c.FindBgpInstance(rs.Primary.ID)
 
 		if err != nil {
 			return fmt.Errorf("Unable to get the bgp instance with error: %v", err)
@@ -195,7 +197,7 @@ func testAccBgpInstanceExists(resourceName string) resource.TestCheckFunc {
 			return fmt.Errorf("Unable to get the bgp instance")
 		}
 
-		if bgpInstance.Name == rs.Primary.Attributes["name"] {
+		if bgpInstance.Name == rs.Primary.ID {
 			return nil
 		}
 		return nil
@@ -209,7 +211,7 @@ func testAccCheckMikrotikBgpInstanceDestroy(s *terraform.State) error {
 			continue
 		}
 
-		bgpInstance, err := c.FindBgpInstance(rs.Primary.Attributes["name"])
+		bgpInstance, err := c.FindBgpInstance(rs.Primary.ID)
 
 		_, ok := err.(*client.NotFound)
 		if !ok && err != nil {
