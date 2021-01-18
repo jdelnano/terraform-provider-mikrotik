@@ -212,6 +212,11 @@ func bgpInstanceToData(b *client.BgpInstance, d *schema.ResourceData) error {
 func prepareBgpInstance(d *schema.ResourceData) *client.BgpInstance {
 	bgpInstance := new(client.BgpInstance)
 
+	// set ID if updating resource
+	if d.Id() != "" {
+		bgpInstance.ID = d.Id()
+	}
+
 	bgpInstance.Name = d.Get("name").(string)
 	bgpInstance.As = d.Get("as").(int)
 	bgpInstance.ClientToClientReflection = d.Get("client_to_client_reflection").(bool)

@@ -192,7 +192,7 @@ func Marshel(s interface{}) string {
 		// may need to revert to string split on ',' for struct tags with > 1 value
 		tag, _ := fieldType.Tag.Lookup("mikrotik")
 
-		if tag != "" && !value.IsZero() {
+		if tag != "" && (!value.IsZero() || value.Kind() == reflect.Bool) {
 			switch value.Kind() {
 			case reflect.Int:
 				intValue := elem.Field(i).Interface().(int)

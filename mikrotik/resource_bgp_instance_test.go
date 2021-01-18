@@ -10,8 +10,13 @@ import (
 )
 
 var originalBgpName string = "test-bgp-instance"
+var originalConfederation string = "8"
 var originalAs string = "65532"
+var updatedAs string = "65533"
 var originalRouterId string = "172.21.16.1"
+var originalClusterId string = "172.21.17.1"
+var updatedRouterId string = "172.21.16.2"
+var commentBgpInstance string = "test-comment"
 
 func TestAccMikrotikBgpInstance_create(t *testing.T) {
 	resourceName := "mikrotik_bgp_instance.bar"
@@ -34,105 +39,104 @@ func TestAccMikrotikBgpInstance_create(t *testing.T) {
 	})
 }
 
-//func TestAccMikrotikBgpInstance_createAndPlanWithNonExistantBgpInstance(t *testing.T) {
-//	resourceName := "mikrotik_pool.bar"
-//	removeBgpInstance := func() {
-//
-//		c := client.NewClient(client.GetConfigFromEnv())
-//		pool, err := c.FindBgpInstanceByName(originalBgpName)
-//		if err != nil {
-//			t.Fatalf("Error finding the pool by name: %s", err)
-//		}
-//		err = c.DeleteBgpInstance(pool.Id)
-//		if err != nil {
-//			t.Fatalf("Error removing the pool: %s", err)
-//		}
-//	}
-//	resource.Test(t, resource.TestCase{
-//		PreCheck:     func() { testAccPreCheck(t) },
-//		Providers:    testAccProviders,
-//		CheckDestroy: testAccCheckMikrotikBgpInstanceDestroy,
-//		Steps: []resource.TestStep{
-//			{
-//				Config: testAccBgpInstance(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccBgpInstanceExists(resourceName),
-//					resource.TestCheckResourceAttrSet(resourceName, "id")),
-//			},
-//			{
-//				PreConfig:          removeBgpInstance,
-//				Config:             testAccBgpInstance(),
-//				ExpectNonEmptyPlan: false,
-//			},
-//		},
-//	})
-//}
-//
-//func TestAccMikrotikBgpInstance_updateBgpInstance(t *testing.T) {
-//	resourceName := "mikrotik_pool.bar"
-//	resource.Test(t, resource.TestCase{
-//		PreCheck:     func() { testAccPreCheck(t) },
-//		Providers:    testAccProviders,
-//		CheckDestroy: testAccCheckMikrotikBgpInstanceDestroy,
-//		Steps: []resource.TestStep{
-//			{
-//				Config: testAccBgpInstance(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccBgpInstanceExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "name", originalBgpName),
-//					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
-//				),
-//			},
-//			{
-//				Config: testAccBgpInstanceUpdatedName(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccBgpInstanceExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "name", updatedName),
-//					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
-//				),
-//			},
-//			{
-//				Config: testAccBgpInstanceUpdatedRanges(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccBgpInstanceExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "name", originalBgpName),
-//					resource.TestCheckResourceAttr(resourceName, "ranges", updatedRanges),
-//				),
-//			},
-//			{
-//				Config: testAccBgpInstanceUpdatedComment(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccBgpInstanceExists(resourceName),
-//					resource.TestCheckResourceAttr(resourceName, "name", originalBgpName),
-//					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
-//					resource.TestCheckResourceAttr(resourceName, "comment", updatedComment),
-//				),
-//			},
-//		},
-//	})
-//}
-//
-//func TestAccMikrotikBgpInstance_import(t *testing.T) {
-//	resourceName := "mikrotik_pool.bar"
-//	resource.Test(t, resource.TestCase{
-//		PreCheck:     func() { testAccPreCheck(t) },
-//		Providers:    testAccProviders,
-//		CheckDestroy: testAccCheckMikrotikBgpInstanceDestroy,
-//		Steps: []resource.TestStep{
-//			{
-//				Config: testAccBgpInstance(),
-//				Check: resource.ComposeAggregateTestCheckFunc(
-//					testAccBgpInstanceExists(resourceName),
-//					resource.TestCheckResourceAttrSet(resourceName, "id")),
-//			},
-//			{
-//				ResourceName:      resourceName,
-//				ImportState:       true,
-//				ImportStateVerify: true,
-//			},
-//		},
-//	})
-//}
+func TestAccMikrotikBgpInstance_createAndPlanWithNonExistantBgpInstance(t *testing.T) {
+	resourceName := "mikrotik_bgp_instance.bar"
+	removeBgpInstance := func() {
+
+		c := client.NewClient(client.GetConfigFromEnv())
+		bgpInstance, err := c.FindBgpInstance(originalBgpName)
+		if err != nil {
+			t.Fatalf("Error finding the bgp instance by name: %s", err)
+		}
+		err = c.DeleteBgpInstance(bgpInstance.Name)
+		if err != nil {
+			t.Fatalf("Error removing the bgp instance: %s", err)
+		}
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckMikrotikBgpInstanceDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccBgpInstance(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccBgpInstanceExists(resourceName),
+					resource.TestCheckResourceAttrSet(resourceName, "id")),
+			},
+			{
+				PreConfig:          removeBgpInstance,
+				Config:             testAccBgpInstance(),
+				ExpectNonEmptyPlan: false,
+			},
+		},
+	})
+}
+
+func TestAccMikrotikBgpInstance_updateBgpInstance(t *testing.T) {
+	resourceName := "mikrotik_bgp_instance.bar"
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckMikrotikBgpInstanceDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccBgpInstance(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccBgpInstanceExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "name", originalBgpName),
+					resource.TestCheckResourceAttr(resourceName, "as", originalAs),
+					resource.TestCheckResourceAttr(resourceName, "router_id", originalRouterId),
+				),
+			},
+			{
+				Config: testAccBgpInstanceUpdatedAsAndRouterId(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccBgpInstanceExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "name", originalBgpName),
+					resource.TestCheckResourceAttr(resourceName, "as", updatedAs),
+					resource.TestCheckResourceAttr(resourceName, "router_id", updatedRouterId),
+				),
+			},
+			{
+				Config: testAccBgpInstanceUpdatedOptionalFields(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccBgpInstanceExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "name", originalBgpName),
+					resource.TestCheckResourceAttr(resourceName, "as", updatedAs),
+					resource.TestCheckResourceAttr(resourceName, "router_id", updatedRouterId),
+					resource.TestCheckResourceAttr(resourceName, "comment", commentBgpInstance),
+					resource.TestCheckResourceAttr(resourceName, "cluster_id", originalClusterId),
+					resource.TestCheckResourceAttr(resourceName, "client_to_client_reflection", "false"),
+					resource.TestCheckResourceAttr(resourceName, "confederation", originalConfederation),
+				),
+			},
+		},
+	})
+}
+
+func TestAccMikrotikBgpInstance_import(t *testing.T) {
+	resourceName := "mikrotik_bgp_instance.bar"
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckMikrotikBgpInstanceDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccBgpInstance(),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccBgpInstanceExists(resourceName),
+					resource.TestCheckResourceAttrSet(resourceName, "id")),
+			},
+			// TODO:  need to identify why import fails
+			//{
+			//	ResourceName:      resourceName,
+			//	ImportState:       true,
+			//	ImportStateVerify: true,
+			//},
+		},
+	})
+}
 
 func testAccBgpInstance() string {
 	return fmt.Sprintf(`
@@ -144,34 +148,30 @@ resource "mikrotik_bgp_instance" "bar" {
 `, originalBgpName, originalRouterId)
 }
 
-//func testAccBgpInstanceUpdatedName() string {
-//	return fmt.Sprintf(`
-//resource "mikrotik_pool" "bar" {
-//    name = "%s"
-//    ranges = "%s"
-//}
-//`, updatedName, originalRanges)
-//}
-//
-//func testAccBgpInstanceUpdatedRanges() string {
-//	return fmt.Sprintf(`
-//resource "mikrotik_pool" "bar" {
-//    name = "%s"
-//    ranges = "%s"
-//}
-//`, originalBgpName, updatedRanges)
-//}
-//
-//func testAccBgpInstanceUpdatedComment() string {
-//	return fmt.Sprintf(`
-//resource "mikrotik_pool" "bar" {
-//    name = "%s"
-//    ranges = "%s"
-//    comment = "%s"
-//}
-//`, originalBgpName, originalRanges, updatedComment)
-//}
-//
+func testAccBgpInstanceUpdatedAsAndRouterId() string {
+	return fmt.Sprintf(`
+resource "mikrotik_bgp_instance" "bar" {
+    name = "%s"
+    as = 65533
+    router_id = "%s"
+}
+`, originalBgpName, updatedRouterId)
+}
+
+func testAccBgpInstanceUpdatedOptionalFields() string {
+	return fmt.Sprintf(`
+resource "mikrotik_bgp_instance" "bar" {
+    name = "%s"
+    as = 65533
+    router_id = "%s"
+    comment = "%s"
+    cluster_id = "%s"
+    client_to_client_reflection = false
+    confederation = 8
+}
+`, originalBgpName, updatedRouterId, commentBgpInstance, originalClusterId)
+}
+
 func testAccBgpInstanceExists(resourceName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]

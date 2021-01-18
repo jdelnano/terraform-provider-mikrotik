@@ -102,9 +102,6 @@ func TestAddAndUpdateBgpInstanceWithOptionalFieldsAndDeleteBgpInstance(t *testin
 
 	bgpInstance, err = c.UpdateBgpInstance(expectedBgpInstance)
 
-	fmt.Println(expectedBgpInstance)
-	fmt.Println(bgpInstance)
-
 	if !reflect.DeepEqual(bgpInstance, expectedBgpInstance) {
 		t.Errorf("The bgp instance does not match what we expected. actual: %v expected: %v", bgpInstance, expectedBgpInstance)
 	}
