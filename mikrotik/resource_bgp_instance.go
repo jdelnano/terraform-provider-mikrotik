@@ -113,7 +113,7 @@ func resourceBgpInstanceCreate(d *schema.ResourceData, m interface{}) error {
 func resourceBgpInstanceRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(client.Mikrotik)
 
-	bgpInstance, err := c.FindBgpInstance(d.Get("name").(string))
+	bgpInstance, err := c.FindBgpInstance(d.Id())
 
 	// TODO: Ignoring this error can cause all resources to think they
 	// need to be created. We should more appropriately handle this. The
