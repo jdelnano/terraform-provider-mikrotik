@@ -36,7 +36,7 @@ func (client Mikrotik) AddBgpInstance(b *BgpInstance) (*BgpInstance, error) {
 		return nil, err
 	}
 
-	attributes := Marshel(b)
+	attributes := Marshal(b)
 	cmd := strings.Split(fmt.Sprintf("/routing/bgp/instance/add %s", attributes), " ")
 
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
@@ -95,7 +95,7 @@ func (client Mikrotik) UpdateBgpInstance(b *BgpInstance) (*BgpInstance, error) {
 	if err != nil {
 		return b, err
 	}
-	attributes := Marshel(b)
+	attributes := Marshal(b)
 	cmd := strings.Split(fmt.Sprintf("/routing/bgp/instance/set %s", attributes), " ")
 
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)

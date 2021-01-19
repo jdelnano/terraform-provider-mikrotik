@@ -207,7 +207,7 @@ func TestMarshal(t *testing.T) {
 	}{name, owner, runCount, allowed, retain, ""}
 
 	expectedAttributes := "=name=test owner =owner=admin =run-count=3 =allowed-or-not=yes =retain=no"
-	attributes := Marshel(&testStruct)
+	attributes := Marshal(&testStruct)
 
 	if attributes != expectedAttributes {
 		t.Errorf("Failed to marshal: %v does not equal expected %v", attributes, expectedAttributes)

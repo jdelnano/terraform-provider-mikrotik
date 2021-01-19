@@ -175,7 +175,7 @@ func boolToMikrotikBool(b bool) string {
 	}
 }
 
-func Marshel(s interface{}) string {
+func Marshal(s interface{}) string {
 	rv := reflect.ValueOf(s)
 	elem := rv.Elem()
 

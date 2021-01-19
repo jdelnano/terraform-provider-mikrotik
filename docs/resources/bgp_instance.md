@@ -37,12 +37,6 @@ resource "mikrotik_bgp_instance" "instance" {
 ## Import Reference
 
 ```bash
-terraform import mikrotik_pool.pool *17
-```
-
-Last argument (*17) is a mikrotik internal id which can be obtained via CLI:
-
-```
-[admin@MikroTik] /ip pool> :put [ find where name=pool-name]
-*17
+# import with name of bgp instance
+terraform import mikrotik_bgp_instance.instance bgp-instance-name
 ```
