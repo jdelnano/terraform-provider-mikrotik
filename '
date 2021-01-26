@@ -115,9 +115,11 @@ func resourceBgpInstanceRead(d *schema.ResourceData, m interface{}) error {
 
 	bgpInstance, err := c.FindBgpInstance(d.Id())
 
-	if err != nil {
-		d.SetId("")
-		return nil
+	if &err != nil {
+		if _, ok := &err.(&client.NotFound); !ok {
+			d.SetId("")
+			return nil
+		}
 	}
 
 	return bgpInstanceToData(bgpInstance, d)
